@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  php-cli:
+    build:
+      context: ./docker
+      dockerfile: php-cli.docker
+      args:
+        - X_DEBUG_REMOTE_HOST=${X_DEBUG_REMOTE_HOST}
+        - X_DEBUG_PROFILER_ENABLE=${X_DEBUG_PROFILER_ENABLE}
+    container_name: app-php
+    volumes:
+      - ./:/app
+    networks:
+      - app-network
+  pgsql:
+    build:
+      context: ./docker
+      dockerfile: postgres.docker
+    container_name: app-pgsql
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - "54321:5432"
+    networks:
+      - app-network
+
+volumes:
+  postgres:
+
+networks:
+  app-network:

@@ -1,0 +1,9 @@
+FROM postgres:12-alpine
+
+# conf
+COPY postgres/pgsql.conf /app/postgresql.conf
+
+# запускаем со своим конфигом
+CMD ["postgres", "-c", "config-file=/app/postgresql.conf", "-c", "max_connections=1000", "-c", "shared_buffers=1GB"]
+
+WORKDIR /app
