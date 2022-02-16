@@ -28,9 +28,28 @@ services:
       - "54321:5432"
     networks:
       - app-network
+  sphinx:
+    build:
+      context: ./docker
+      dockerfile: sphinx.docker
+      args:
+        DATABASE_HOST: ${DATABASE_HOST}
+        DATABASE_PORT: ${DATABASE_PORT}
+        DATABASE_USERNAME: ${DATABASE_USERNAME}
+        DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+        DATABASE_NAME: ${DATABASE_NAME}
+    container_name: app-sphinx
+    ports:
+      - "9306:9306"
+      - "9312:9312"
+    volumes:
+       - search:/app
+    networks:
+      - app-network
 
 volumes:
   postgres:
+  search:
 
 networks:
   app-network:

@@ -11,7 +11,7 @@ RUN apk update && \
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install pdo_pgsql zip bcmath
+    && docker-php-ext-install pdo_pgsql zip mysqli pdo pdo_mysql
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet
 

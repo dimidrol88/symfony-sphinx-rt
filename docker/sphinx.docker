@@ -1,0 +1,42 @@
+FROM alpine:3.12
+
+ARG DATABASE_HOST
+ARG DATABASE_PORT
+ARG DATABASE_USERNAME
+ARG DATABASE_PASSWORD
+ARG DATABASE_NAME
+
+ENV VERSION 3.3.1
+ENV REVISION b72d67b
+
+# install dependencies
+RUN apk add --no-cache \
+    mariadb-dev \
+    postgresql-dev \
+    unixodbc-dev \
+    mysql-client
+
+RUN wget -q http://sphinxsearch.com/files/sphinx-${VERSION}-${REVISION}-linux-amd64-musl.tar.gz && \
+    tar zxf sphinx-${VERSION}-${REVISION}-linux-amd64-musl.tar.gz && \
+    mv sphinx-${VERSION}/bin/* /usr/local/bin/ && \
+    rm -rf sphinx-${VERSION} && \
+    rm sphinx-${VERSION}-${REVISION}-linux-amd64-musl.tar.gz && \
+    mkdir -p /app/etc /app/data /app/logs && \
+    ln -sf /dev/stdout /app/logs/*
+
+COPY sphinx/sphinx.conf /app/etc/sphinx.conf
+RUN sed -i -e 's/{{DATABASE_HOST}}/'$DATABASE_HOST'/g' /app/etc/sphinx.conf
+RUN sed -i -e 's/{{DATABASE_PORT}}/'$DATABASE_PORT'/g' /app/etc/sphinx.conf
+RUN sed -i -e 's/{{DATABASE_USERNAME}}/'$DATABASE_USERNAME'/g' /app/etc/sphinx.conf
+RUN sed -i -e 's/{{DATABASE_PASSWORD}}/'$DATABASE_PASSWORD'/g' /app/etc/sphinx.conf
+RUN sed -i -e 's/{{DATABASE_NAME}}/'$DATABASE_NAME'/g' /app/etc/sphinx.conf
+
+STOPSIGNAL SIGKILL
+
+VOLUME /app/logs
+
+EXPOSE 9306 9312
+
+COPY sphinx/run.sh /app/run.sh
+RUN chmod 0777 /app/run.sh
+CMD ["/app/run.sh"]

@@ -16,6 +16,10 @@ doctrine:
         default_table_options:
           charset: utf8mb4
           collate: utf8mb4_unicode_ci
+      search:
+        host: '%env(resolve:SPHINX_HOST)%'
+        port: '%env(resolve:SPHINX_PORT)%'
+        driver: 'pdo_mysql'
 
   orm:
     auto_generate_proxy_classes: true
